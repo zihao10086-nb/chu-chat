@@ -257,7 +257,7 @@ public class RedisUtils {
         return get(key, String.class);
     }
 
-    public static <T> T get(String key, Class<T> tClass) {
+    private static <T> T get(String key, Class<T> tClass) {
         String s = get(key);
         return toBeanOrNull(s, tClass);
     }

@@ -1,10 +1,11 @@
 package com.qiaochu.mallchat.common.websocket;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONUtil;
-import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.qiaochu.mallchat.common.websocket.domain.enums.WSReqTypeEnum;
 import com.qiaochu.mallchat.common.websocket.domain.vo.req.WSBaseReq;
+import com.qiaochu.mallchat.common.websocket.service.NettyUtil;
 import com.qiaochu.mallchat.common.websocket.service.WebSocketService;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -38,12 +39,15 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
             System.out.println("握手成功");
+            String token = NettyUtil.getAttr(ctx.channel(), NettyUtil.TOKEN);
+            if (StrUtil.isNotBlank(token)){
+                webSocketService.authorize(ctx.channel(), token);
+            }
         } else if (evt instanceof IdleStateEvent) {
             IdleStateEvent idleStateEvent = (IdleStateEvent) evt;
             if (idleStateEvent.state().equals(IdleState.READER_IDLE)) {
                 System.out.println("读空闲");
-                //todo 用户下线
-                ctx.channel().close();
+                userOffline(ctx.channel());
             }
         }
     }
@@ -60,9 +64,10 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
         String text = msg.text();
-        WSBaseReq bean = JSONUtil.toBean(text, WSBaseReq.class);
-        switch (WSReqTypeEnum.of(bean.getType())) {
+        WSBaseReq wsBaseReq = JSONUtil.toBean(text, WSBaseReq.class);
+        switch (WSReqTypeEnum.of(wsBaseReq.getType())) {
             case AUTHORIZE:
+                webSocketService.authorize(ctx.channel(), wsBaseReq.getData());
                 break;
             case HEARTBEAT:
                 break;
