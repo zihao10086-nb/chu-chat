@@ -2,6 +2,9 @@ package com.qiaochu.mallchat.common;
 
 import com.qiaochu.mallchat.common.common.utils.JwtUtils;
 import com.qiaochu.mallchat.common.common.utils.RedisUtils;
+import com.qiaochu.mallchat.common.user.domain.enums.IdempotentEnum;
+import com.qiaochu.mallchat.common.user.domain.enums.ItemEnum;
+import com.qiaochu.mallchat.common.user.service.IUserBackpackService;
 import com.qiaochu.mallchat.common.user.service.LoginService;
 import lombok.SneakyThrows;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -41,6 +44,14 @@ public class DaoTest {
     private RedissonClient redissonClient;
     @Resource
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+
+    @Resource
+    private IUserBackpackService iUserBackpackService;
+    @Test
+    public void acquireItem() {
+        iUserBackpackService.acquireItem(20001L, ItemEnum.PLANET.getId(), IdempotentEnum.UID, "20001L");
+
+    }
     @SneakyThrows
     @Test
     public void jwt() {

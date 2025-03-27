@@ -1,7 +1,5 @@
 package com.qiaochu.mallchat.common.user.service;
 
-import com.qiaochu.mallchat.common.user.domain.entity.UserBackpack;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.qiaochu.mallchat.common.user.domain.enums.IdempotentEnum;
 
 /**
@@ -20,6 +18,6 @@ public interface IUserBackpackService{
      * @param idempotentEnum 幂等类型
      * @param businessId 幂等唯一标识
      */
-    void acquireItem(String userId, String itemId, IdempotentEnum idempotentEnum, String businessId);
+    void acquireItem(Long uid, Long itemId, IdempotentEnum idempotentEnum, String businessId);
 
 }

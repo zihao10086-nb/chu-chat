@@ -25,5 +25,5 @@ public interface UserService{
 
     List<BadgeResp> badges(Long uid);
 
-    Void wearingBadge(Long uid, @NotNull Long itemId);
+    void wearingBadge(Long uid, @NotNull Long itemId);
 }

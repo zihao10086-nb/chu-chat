@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Void wearingBadge(Long uid, Long itemId) {
+    public void wearingBadge(Long uid, Long itemId) {
         //确保有徽章
         UserBackpack firstValidItem = userBackpackDao.getFirstValidItem(uid, itemId);
         AssertUtil.isNotEmpty(firstValidItem, "您还没有这个徽章，快去获得吧");
@@ -84,7 +84,6 @@ public class UserServiceImpl implements UserService {
         ItemConfig itemConfig = itemConfigDao.getById(firstValidItem.getItemId());
         AssertUtil.equal(itemConfig.getType(),ItemTypeEnum.BADGE.getType(),"只有徽章才能佩戴");
         userDao.wearingBadge(uid, itemId);
-
     }
 
 }
