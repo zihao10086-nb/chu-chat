@@ -21,4 +21,23 @@ public class UserDao extends ServiceImpl<UserMapper, User>  {
                 .eq(User::getOpenId, openId)
                 .one();
     }
+
+    public User getByName(String name) {
+        return lambdaQuery().eq(User::getName, name).one();
+    }
+
+    public void modifyName(Long uid, String name) {
+        lambdaUpdate()
+                .eq(User::getId, uid)
+                .set(User::getName, name)
+                .update();
+    }
+
+
+    public void wearingBadge(Long uid, Long itemId) {
+        lambdaUpdate()
+                .eq(User::getId, uid)
+                .set(User::getItemId, itemId)
+                .update();
+    }
 }

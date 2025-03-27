@@ -43,8 +43,9 @@ public class DaoTest {
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
     @SneakyThrows
     @Test
-    public void redis() {
-
+    public void jwt() {
+        String token = loginService.login(20001L);
+        System.out.println(token);
     }
     @Autowired
     private LoginService loginService;

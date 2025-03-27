@@ -2,6 +2,7 @@ package com.qiaochu.mallchat.common.user.service;
 
 import com.qiaochu.mallchat.common.user.domain.entity.UserBackpack;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.qiaochu.mallchat.common.user.domain.enums.IdempotentEnum;
 
 /**
  * <p>
@@ -11,6 +12,14 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author ${author}
  * @since 2025-03-26
  */
-public interface IUserBackpackService extends IService<UserBackpack> {
+public interface IUserBackpackService{
+    /**
+     * 给用户发放物品
+     * @param userId 用户id
+     * @param itemId 物品id
+     * @param idempotentEnum 幂等类型
+     * @param businessId 幂等唯一标识
+     */
+    void acquireItem(String userId, String itemId, IdempotentEnum idempotentEnum, String businessId);
 
 }
