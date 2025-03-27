@@ -1,6 +1,7 @@
 package com.qiaochu.mallchat.common.user.service.impl;
 
 import com.qiaochu.mallchat.common.common.domain.enums.YesOrNoEnum;
+import com.qiaochu.mallchat.common.common.service.LockService;
 import com.qiaochu.mallchat.common.common.utils.AssertUtil;
 import com.qiaochu.mallchat.common.user.dao.UserBackpackDao;
 import com.qiaochu.mallchat.common.user.domain.entity.UserBackpack;
@@ -16,18 +17,16 @@ import java.util.Objects;
 @Service
 public class UserBackpackServiceImpl implements IUserBackpackService {
     @Resource
-    private RedissonClient redissonClient;
+    private LockService lockService;
     @Resource
     private UserBackpackDao userBackpackDao;
+
     @Override
     public void acquireItem(Long uid, Long itemId, IdempotentEnum idempotentEnum, String businessId) {
         String idempotent = getIdempotent(itemId, idempotentEnum, businessId);
-        RLock lock = redissonClient.getLock("acquireItem" + idempotent);
-        boolean b = lock.tryLock();
-        AssertUtil.isTrue(b, "请求太频繁了");
-        try {
+        lockService.executeWithLock("acquireItem" + idempotent, () -> {
             UserBackpack userBackpack = userBackpackDao.getByIdempotent(idempotent);
-            if (Objects.nonNull(userBackpack)){
+            if (Objects.nonNull(userBackpack)) {
                 return;
             }
             //发放物品
@@ -38,9 +37,7 @@ public class UserBackpackServiceImpl implements IUserBackpackService {
                     .idempotent(idempotent)
                     .build();
             userBackpackDao.save(insert);
-        }finally {
-            lock.unlock();
-        }
+        });
     }
 
     private String getIdempotent(Long itemId, IdempotentEnum idempotentEnum, String businessId) {

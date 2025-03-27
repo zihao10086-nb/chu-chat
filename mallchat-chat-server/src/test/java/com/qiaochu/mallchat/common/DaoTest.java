@@ -49,7 +49,7 @@ public class DaoTest {
     private IUserBackpackService iUserBackpackService;
     @Test
     public void acquireItem() {
-        iUserBackpackService.acquireItem(20001L, ItemEnum.PLANET.getId(), IdempotentEnum.UID, "20001L");
+        iUserBackpackService.acquireItem(20001L, ItemEnum.REG_TOP100_BADGE.getId(), IdempotentEnum.UID, "20001L");
 
     }
     @SneakyThrows
