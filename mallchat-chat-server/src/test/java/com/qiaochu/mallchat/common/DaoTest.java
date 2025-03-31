@@ -2,6 +2,8 @@ package com.qiaochu.mallchat.common;
 
 import com.qiaochu.mallchat.common.common.utils.JwtUtils;
 import com.qiaochu.mallchat.common.common.utils.RedisUtils;
+import com.qiaochu.mallchat.common.user.dao.UserDao;
+import com.qiaochu.mallchat.common.user.domain.entity.User;
 import com.qiaochu.mallchat.common.user.domain.enums.IdempotentEnum;
 import com.qiaochu.mallchat.common.user.domain.enums.ItemEnum;
 import com.qiaochu.mallchat.common.user.service.IUserBackpackService;
@@ -32,6 +34,9 @@ public class DaoTest {
     private WxMpService wxMpService;
     @Autowired
     private JwtUtils jwtUtils;
+    @Autowired
+    private UserDao userDao;
+
     @Test
     public void testJwt() throws InterruptedException {
         System.out.println(jwtUtils.createToken(1L));
@@ -51,6 +56,17 @@ public class DaoTest {
     public void acquireItem() {
         iUserBackpackService.acquireItem(20001L, ItemEnum.REG_TOP100_BADGE.getId(), IdempotentEnum.UID, "20001L");
 
+    }
+    @Test
+    public void update() {
+        User user = new User();
+        user.setName("xxx");
+        user.setAvatar("swa");
+        user.setOpenId("1223");
+        userDao.save(user);
+        user.setOpenId("12232");
+        user.setActiveStatus(2);
+        userDao.updateById(user);
     }
     @SneakyThrows
     @Test

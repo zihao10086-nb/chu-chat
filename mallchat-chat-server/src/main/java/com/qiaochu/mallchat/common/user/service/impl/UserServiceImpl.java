@@ -1,6 +1,8 @@
 package com.qiaochu.mallchat.common.user.service.impl;
 
 import com.qiaochu.mallchat.common.common.Exception.BusinessException;
+import com.qiaochu.mallchat.common.common.annotation.RedissonLock;
+import com.qiaochu.mallchat.common.common.event.UserRegisterEvent;
 import com.qiaochu.mallchat.common.common.utils.AssertUtil;
 import com.qiaochu.mallchat.common.user.dao.ItemConfigDao;
 import com.qiaochu.mallchat.common.user.dao.UserBackpackDao;
@@ -15,6 +17,7 @@ import com.qiaochu.mallchat.common.user.domain.vo.resp.UserInfoResp;
 import com.qiaochu.mallchat.common.user.service.UserService;
 import com.qiaochu.mallchat.common.user.service.adapter.UserAdapter;
 import com.qiaochu.mallchat.common.user.service.cache.ItemCache;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,12 +36,15 @@ public class UserServiceImpl implements UserService {
     private ItemConfigDao itemConfigDao;
     @Resource
     private ItemCache itemCache;
+    @Resource
+    private ApplicationEventPublisher applicationEventPublisher;
     @Override
     @Transactional
-    public Long register(User userSave) {
-        boolean save = userDao.save(userSave);
-        //todo 用户注册
-        return userSave.getId();
+    public Long register(User insert) {
+        boolean save = userDao.save(insert);
+        //用户注册事件
+        applicationEventPublisher.publishEvent(new UserRegisterEvent(this,insert));
+        return insert.getId();
     }
 
     @Override
@@ -50,6 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @RedissonLock(key = "#uid")
     public void modifyName(Long uid, String name) {
         User oldUser = userDao.getByName(name);
         AssertUtil.isEmpty(oldUser, "用户名已存在");

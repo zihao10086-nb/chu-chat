@@ -5,7 +5,6 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONUtil;
 import com.qiaochu.mallchat.common.websocket.domain.enums.WSReqTypeEnum;
 import com.qiaochu.mallchat.common.websocket.domain.vo.req.WSBaseReq;
-import com.qiaochu.mallchat.common.websocket.service.NettyUtil;
 import com.qiaochu.mallchat.common.websocket.service.WebSocketService;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;
